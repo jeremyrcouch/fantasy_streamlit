@@ -350,7 +350,23 @@ if (schedule_raw is not None) and (points_raw is not None):
     st.plotly_chart(wpf, use_container_width=True)
     
     st.header('Season Summary Through Week {}'.format(week))
-    df_disp = stats.stats.style.format({'Points': '{:.2f}'})
+    col_styles = {
+        'Place': '{:.0f}',
+        'Points': '{:.2f}',
+        'Points Vs': '{:.2f}',
+        'Wins': '{:.0f}',
+        'Losses': '{:.0f}',
+        'Expected Wins': '{:.0f}',
+        'Close Wins': '{:.0f}',
+        'Close Losses': '{:.0f}',
+    }
+    if rank_opt != 'none':
+        col_styles.update({
+            'Rank Pts': '{:.2f}',
+            'Rank Pts Vs': '{:.2f}',
+            'Total Pts': '{:.2f}'
+        })
+    df_disp = stats.stats.style.format(col_styles)
     st.dataframe(df_disp, width=1800, height=1200)
 
     st.header('Distributions Through Week {}'.format(week))
