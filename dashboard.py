@@ -240,15 +240,25 @@ def stat_over_time(ssn: season, y_col: str, cume: bool = False):
     fig = go.Figure()
     for p in ordered_players:
         pind = ssn.schedule.players.index(p)
-        ppoints = ssn.points.long.loc[ssn.points.long['Player'] == p, :]
-        if cume:
+        if y_col == 'Place':
+            x_vals = ssn.points.long.loc[:, 'Week']
             plot_vals = []
             for wk in range(1, week + 1):
-                plot_vals.append(ppoints.loc[ppoints['Week'] <= wk, y_col].sum())
+                wk_pts = points(ssn.points.wide.loc[1:wk, :].reset_index())
+                wk_ssn = season(wk_pts, ssn.schedule, wk, ssn.rank_option, ssn.place_option)
+                wk_place = wk_ssn.stats.loc[wk_ssn.stats['Player'] == p, y_col].values[0]
+                plot_vals.append(wk_place)
         else:
-            plot_vals = ppoints.loc[:, y_col]
+            ppoints = ssn.points.long.loc[ssn.points.long['Player'] == p, :]
+            x_vals = ssn.points.long.loc[:, 'Week']
+            if cume:
+                plot_vals = []
+                for wk in range(1, week + 1):
+                    plot_vals.append(ppoints.loc[ppoints['Week'] <= wk, y_col].sum())
+            else:
+                plot_vals = ppoints.loc[:, y_col]
         fig.add_trace(go.Scatter(
-            x=ssn.points.long.loc[:, 'Week'],
+            x=x_vals,
             y=plot_vals,
             mode='lines+markers',
             name=p,
@@ -263,6 +273,14 @@ def stat_over_time(ssn: season, y_col: str, cume: bool = False):
         margin=go.layout.Margin(l=50, r=50, b=25, t=25, pad=4),
         xaxis=dict(tickmode='linear', tick0=1, dtick=1)
     )
+    if y_col == 'Place':
+        fig.update_layout(
+            yaxis=dict(
+                autorange='reversed',
+                tickmode='linear',
+                tick0=1, dtick=1
+            )
+        )
 
     return fig
 
@@ -383,11 +401,15 @@ if (schedule_raw is not None) and (points_raw is not None):
     st.plotly_chart(sdp, use_container_width=True)
 
     st.header('Stats Over Time')
-    week_or_cume = st.radio('Weekly or cumulative values', ['Weekly', 'Cumulative'])
-    cume = 'cumulative' == week_or_cume.lower()
     stat_options = {s: dist_options[s] for s in dist_options if 'points' in s.lower()}
+    stat_options.update({'Place': 'Place'})
     stat_select = st.selectbox('Select stat to view over time', [s for s in stat_options])
     y_col = stat_options[stat_select]
+    if y_col != 'Place':
+        week_or_cume = st.radio('Weekly or cumulative values', ['Weekly', 'Cumulative'])
+        cume = 'cumulative' == week_or_cume.lower()
+    else:
+        cume = False
     sot = stat_over_time(stats, y_col, cume)
     st.plotly_chart(sot, use_container_width=True)
 
