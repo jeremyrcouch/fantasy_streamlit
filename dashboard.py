@@ -320,33 +320,46 @@ place_opt = st.sidebar.selectbox(
     format_func=lambda x: place_opt_names[x]
 )
 
-st.sidebar.subheader('Season Schedule')
-st.sidebar.text('CSV should look like:')
-st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
-|:------:|:------:|:------:|:------:|
-| 1      | Dwight | Jim    | ...    |
-| 2      | Michael| Pam    | ...    |
-| ...    | ...    | ...    | ...    |""")
-schedule_raw = st.sidebar.file_uploader('Upload schedule', type=['csv'])
+yours_or_sample = st.sidebar.radio('Use your data or sample data', ['Yours', 'Sample'])
+use_sample_data = yours_or_sample.lower() == 'sample'
+schedule_raw = points_raw = schedule_wide = points_wide = None
+if not use_sample_data:
+    st.sidebar.subheader('Season Schedule')
+    st.sidebar.text('CSV should look like:')
+    st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
+    |:------:|:------:|:------:|:------:|
+    | 1      | Dwight | Jim    | ...    |
+    | 2      | Michael| Pam    | ...    |
+    | ...    | ...    | ...    | ...    |""")
+    schedule_raw = st.sidebar.file_uploader('Upload schedule', type=['csv'])
 
-st.sidebar.subheader('Season Points Data')
-st.sidebar.text('CSV should look like:')
-st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
-|:------:|:------:|:------:|:------:|
-| 1      | 101.40 | 87.94  | ...    |
-| 2      | 98.65  | 103.52 | ...    |
-| ...    | ...    | ...    | ...    |""")
-points_raw = st.sidebar.file_uploader('Upload points', type=['csv'])
+    st.sidebar.subheader('Season Points Data')
+    st.sidebar.text('CSV should look like:')
+    st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
+    |:------:|:------:|:------:|:------:|
+    | 1      | 101.40 | 87.94  | ...    |
+    | 2      | 98.65  | 103.52 | ...    |
+    | ...    | ...    | ...    | ...    |""")
+    points_raw = st.sidebar.file_uploader('Upload points', type=['csv'])
 
-title = name if len(name) > 0 else 'Fantasy Football'
+title = 'Fantasy Football'
+if len(name) > 0:
+    title = name
+elif use_sample_data:
+    title = 'The Office League'
 st.title(title)
 
 if (schedule_raw is not None) and (points_raw is not None):
     schedule_raw.seek(0)
     points_raw.seek(0)
     schedule_wide = pd.read_csv(schedule_raw)
-    sched = schedule(schedule_wide)
     points_wide = pd.read_csv(points_raw)
+elif use_sample_data:
+    schedule_wide = pd.read_csv('./data/schedule.csv')
+    points_wide = pd.read_csv('./data/points.csv')
+
+if (schedule_wide is not None) and (points_wide is not None):
+    sched = schedule(schedule_wide)
     pts = points(points_wide)
 
     slider_header_slot.subheader('Select Week')
@@ -408,6 +421,5 @@ if (schedule_raw is not None) and (points_raw is not None):
         cume = False
     sot = stat_over_time(stats, y_col, cume)
     st.plotly_chart(sot, use_container_width=True)
-
 else:
     st.write('Upload season schedule and points using the sidebar to the left.')
