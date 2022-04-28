@@ -322,24 +322,20 @@ place_opt = st.sidebar.selectbox(
 
 st.sidebar.subheader('Season Schedule')
 st.sidebar.text('CSV should look like:')
-st.sidebar.markdown(
-    """| Week   | Jim    | Dwight | ...    |
-    |:------:|:------:|:------:|:------:|
-    | 1      | Dwight | Jim    | ...    |
-    | 2      | Michael| Pam    | ...    |
-    | ...    | ...    | ...    | ...    |"""
-)
+st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
+|:------:|:------:|:------:|:------:|
+| 1      | Dwight | Jim    | ...    |
+| 2      | Michael| Pam    | ...    |
+| ...    | ...    | ...    | ...    |""")
 schedule_raw = st.sidebar.file_uploader('Upload schedule', type=['csv'])
 
 st.sidebar.subheader('Season Points Data')
 st.sidebar.text('CSV should look like:')
-st.sidebar.markdown(
-    """| Week   | Jim    | Dwight | ...    |
-    |:------:|:------:|:------:|:------:|
-    | 1      | 101.40 | 87.94  | ...    |
-    | 2      | 98.65  | 103.52 | ...    |
-    | ...    | ...    | ...    | ...    |"""
-)
+st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
+|:------:|:------:|:------:|:------:|
+| 1      | 101.40 | 87.94  | ...    |
+| 2      | 98.65  | 103.52 | ...    |
+| ...    | ...    | ...    | ...    |""")
 points_raw = st.sidebar.file_uploader('Upload points', type=['csv'])
 
 title = name if len(name) > 0 else 'Fantasy Football'
