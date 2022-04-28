@@ -15,6 +15,18 @@ MARKERS = ['circle', 'square', 'diamond', 'cross', 'x', 'triangle-up',
            'star', 'star-diamond', 'diamond-tall', 'diamond-wide', 'hourglass']
 MARKERS += MARKERS[::-1]
 
+SCHEDULE_CSV_MARKDOWN = """| Week   | Jim    | Dwight | ...    |
+|:------:|:------:|:------:|:------:|
+| 1      | Dwight | Jim    | ...    |
+| 2      | Michael| Pam    | ...    |
+| ...    | ...    | ...    | ...    |"""
+
+POINTS_CSV_MARKDOWN = """| Week   | Jim    | Dwight | ...    |
+|:------:|:------:|:------:|:------:|
+| 1      | 101.40 | 87.94  | ...    |
+| 2      | 98.65  | 103.52 | ...    |
+| ...    | ...    | ...    | ...    |"""
+
 
 class schedule:
     def __init__(self, wide: pd.DataFrame):
@@ -326,20 +338,12 @@ schedule_raw = points_raw = schedule_wide = points_wide = None
 if not use_sample_data:
     st.sidebar.subheader('Season Schedule')
     st.sidebar.text('CSV should look like:')
-    st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
-    |:------:|:------:|:------:|:------:|
-    | 1      | Dwight | Jim    | ...    |
-    | 2      | Michael| Pam    | ...    |
-    | ...    | ...    | ...    | ...    |""")
+    st.sidebar.markdown(SCHEDULE_CSV_MARKDOWN)
     schedule_raw = st.sidebar.file_uploader('Upload schedule', type=['csv'])
 
     st.sidebar.subheader('Season Points Data')
     st.sidebar.text('CSV should look like:')
-    st.sidebar.markdown("""| Week   | Jim    | Dwight | ...    |
-    |:------:|:------:|:------:|:------:|
-    | 1      | 101.40 | 87.94  | ...    |
-    | 2      | 98.65  | 103.52 | ...    |
-    | ...    | ...    | ...    | ...    |""")
+    st.sidebar.markdown(POINTS_CSV_MARKDOWN)
     points_raw = st.sidebar.file_uploader('Upload points', type=['csv'])
 
 title = 'Fantasy Football'
